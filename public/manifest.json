@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "AI 텍스트 요약 도우미",
+  "version": "1.0.0",
+  "description": "웹 페이지나 기사를 AI가 자동으로 요약해주는 익스텐션",
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "icons/folder16.png",
+      "48": "icons/folder48.png",
+      "128": "icons/folder128.png"
+    }
+  },
+  "permissions": [
+    "storage", 
+    "activeTab",
+    "tabs",
+    "http://localhost:11434/*",
+    "chrome-extension://eppolljijejbeangokfapfpkkdipbonb"
+
+  ],
+  "host_permissions": [
+    "http://localhost:11434/*",
+    "chrome-extension://eppolljijejbeangokfapfpkkdipbonb"
+  ],
+  "icons": {
+    "16": "icons/folder16.png",
+    "48": "icons/folder48.png",
+    "128": "icons/folder128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}
