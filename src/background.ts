@@ -33,29 +33,35 @@ async function callSummaryApi(text: string, language: string) {
     console.error("모델 목록 가져오기 실패:", error);
   }
 
-  // 설치된 모델 중에서 선택 (llama로 시작하는 모델 우선)
-  let modelToUse = "llama3:8b";
+  let modelToUse = "falcon:latest";
+
   if (installedModels.length > 0) {
-    const llamaModels = installedModels.filter((m) =>
-      m.toLowerCase().includes("llama")
-    );
-    if (llamaModels.length > 0) {
-      modelToUse = llamaModels[0];
-    } else {
-      modelToUse = installedModels[0];
-    }
+    modelToUse = installedModels[0];
   }
 
-  console.log("사용할 모델:", modelToUse);
-
   const langPrompt: { [key: string]: string } = {
-    ko: "다음 텍스트를 한국어로 요약해주세요: ",
-    en: "Summarize the following text in English: ",
-    ja: "次のテキストを日本語で要約してください: ",
-    zh: "用中文总结以下文本: ",
+    ko: "한국어",
+    en: "영어",
+    ja: "일본어",
+    zh: "중국어",
   };
 
-  const promptPrefix = langPrompt[language] || langPrompt.en;
+  const prompt = `
+    ${
+      langPrompt[language] || "한국어"
+    }로 다음 텍스트를 요약해주세요. 절대로 다른 언어로 응답하지 마세요.
+요약 규칙:
+    -반드시 ${langPrompt[language] || "한국어"}로 작성할 것
+    -최소 5개 이상의 핵심 포인트만 포함할 것(원문이 길면 무조건 원문의 50% 이상으로 핵심포인트 만들기)
+    -원문 텍스트수 파악해서 50% 이상으로 요약할것 그 이하는 안됨
+    -각 포인트는 번호를 매겨 구분할 것
+    -원문 길이의 50% 이상으로 작성할 것
+    -요약본 이외에 다른 주석이나 말들은 포함하지 말것
+    -요약본에 요약규칙등 불필요한 내용 포함하지 말것
+    -필수! 한글 문맥에 맞게 요약할것 (더블체크)
+
+     원문 : ${text}
+  `;
 
   try {
     const response = await fetch(endPoint, {
@@ -65,7 +71,7 @@ async function callSummaryApi(text: string, language: string) {
       },
       body: JSON.stringify({
         model: modelToUse,
-        prompt: promptPrefix + text,
+        prompt: prompt,
         stream: false,
       }),
     });

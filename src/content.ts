@@ -114,8 +114,6 @@ function showSummaryPopup(summary: string) {
     existingOverlay.remove();
   }
 
-  console.log("요약 팝업 생성 시작");
-
   // 새 팝업 생성
   const popup = document.createElement("div");
   popup.id = "text-summarizer-popup";

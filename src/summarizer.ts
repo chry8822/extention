@@ -90,13 +90,90 @@ export const extractMainContent = (): string => {
 
   // 1. nav, aside 요소를 제외하고 텍스트 추출하는 헬퍼 함수
   const getCleanText = (element: HTMLElement): string => {
-    const excludedTags = ["NAV", "ASIDE", "nav", "aside", "footer", "header"];
+    const excludedTags = [
+      "NAV",
+      "ASIDE",
+      "nav",
+      "aside",
+      "footer",
+      "header",
+      "SCRIPT",
+      "script",
+      "style",
+      "STYLE",
+      "iframe",
+      "IFRAME",
+    ];
+    const excludedClasses = [
+      "snb_menu",
+      "menu",
+      "gnb",
+      "ad",
+      "ad_area",
+      "nav_header",
+      "list",
+      "newvisit_history vst",
+      "footer",
+      "header",
+      "gnb_bar",
+      "right_content",
+      "gall_listwrap list",
+      "issue_wrap",
+      "blind",
+      "concept_wrap",
+      "listwrap clear",
+      "dctrend_ranking",
+      "stickyunit",
+      "dcfoot type1",
+      "skip",
+      "dcheader typea",
+      "lately_gall",
+      "visit_bookmark",
+      "footer_wrap",
+      "viewListArea",
+      "naver_ad",
+      "bundle",
+      "fr gall_issuebox",
+      "page_head clear",
+      "issue_setting",
+      "pop_info",
+      "tab_menubox",
+      "inner",
+      "pop_wrap type3",
+      "btn_apply",
+      "btn_cancle",
+      "pop_tipbox setting_list",
+      "pop_head bg",
+      "gall_useinfo",
+      "adr_copy",
+    ];
 
     const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, {
       acceptNode(node) {
-        return excludedTags.includes(node.parentElement?.tagName as string)
-          ? NodeFilter.FILTER_REJECT
-          : NodeFilter.FILTER_ACCEPT;
+        // 중요: 직계 부모뿐만 아니라 모든 상위 요소 확인
+        let parent = node.parentElement;
+
+        // 상위 요소들을 모두 확인
+        while (parent) {
+          // 태그 이름으로 확인
+          if (excludedTags.includes(parent.tagName)) {
+            return NodeFilter.FILTER_REJECT;
+          }
+
+          // 클래스 이름으로 확인
+          if (parent.classList) {
+            for (const excludedClass of excludedClasses) {
+              if (parent.classList.contains(excludedClass)) {
+                return NodeFilter.FILTER_REJECT;
+              }
+            }
+          }
+
+          // 상위로 이동
+          parent = parent.parentElement;
+        }
+
+        return NodeFilter.FILTER_ACCEPT;
       },
     });
 

@@ -28,7 +28,26 @@ function App() {
   useEffect(() => {
     console.log("컴포넌트 마운트됨");
     checkServiceWorker();
+
+    (async () =>
+      await new Promise<{ language: SupportedLanguage }>((resolve) => {
+        chrome.storage.local.get(["settings"], (result) => {
+          setLanguage(result.settings?.language || "ko");
+          resolve(result.settings || { language: "ko" });
+        });
+      }))();
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      await new Promise<void>((resolve) => {
+        chrome.storage.local.set({ settings: { language } }, () => {
+          console.log(`언어 설정이 ${language}로 저장되었습니다.`);
+          resolve();
+        });
+      });
+    })();
+  }, [language]);
 
   // 서비스 워커 상태 확인
   const checkServiceWorker = () => {
