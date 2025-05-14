@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-import { extractMainContent } from "./summarizer";
 
 // SupportedLanguage 타입 정의
 type SupportedLanguage = "ko" | "en" | "ja" | "zh";
